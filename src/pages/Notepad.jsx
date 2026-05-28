@@ -1,4 +1,4 @@
-import { collection, onSnapshot, setDoc } from "firebase/firestore";
+import { collection, onSnapshot, doc, addDoc, updateDoc } from "firebase/firestore";
 import { useParams } from "react-router-dom"
 import { useState, useEffect, useRef } from "react";
 import { db } from "../firebase";
@@ -10,6 +10,8 @@ export default function Notepad() {
   const [tabs, setTabs] = useState([]);
   const [currentTab, setCurrentTab] = useState(null);
   const [adding, setAdding] = useState(false);
+  const [text, setText] = useState(currentTab?.conteudo || "");
+  const timeout = useRef(null);
   const inputRef = useRef();
 
   useEffect(() => {
@@ -22,9 +24,15 @@ export default function Notepad() {
       const current = snapshot.docs.find(tab => tab.id === tabId);
       setTabs(tabsData);
       setCurrentTab(current ? {id: current.id, ...current.data()} : null);
+      console.log("tabId da URL:", tabId);
+      console.log("docs no snapshot:", snapshot.docs.map(d => d.id));
     });
     return () => unsub;
   }, [notepadId, tabId]);
+
+  useEffect(() => {
+    setText(currentTab?.conteudo || "")
+  }, [currentTab]);
 
   function openAdd() {
     setAdding(true);
@@ -36,12 +44,24 @@ export default function Notepad() {
   async function addTab() {
     const name = inputRef.current?.value;
     if(name !== "") {
-      await setDoc(doc(db, "dbprojetonotepad", notepadId, "guias"), {
+      await addDoc(collection(db, "dbprojetonotepad", notepadId, "guias"), {
         nome: name,
         conteudo: ""
       })
     }
     setAdding(false);
+  }
+
+  function updateText(e) {
+    const newText = e.target.value;
+    setText(newText);
+    clearTimeout(timeout.current); // Se o usuário digita antes de 2 segundos, reinicia a contagem
+    timeout.current = setTimeout(async () => {
+      const tab = doc(db, "dbprojetonotepad", notepadId, "guias", tabId);
+      await updateDoc(tab, {
+        conteudo: newText
+      })
+    }, 2000); // Se não digitar por mais de 2 segundos, salva
   }
 
   return (
@@ -62,7 +82,7 @@ export default function Notepad() {
         ))}
       </aside>
       <textarea className="w-full h-screen p-3 resize-none"
-      defaultValue={currentTab?.conteudo || ""} />
+      value={text} onChange={updateText} />
     </div>
   )
 }
