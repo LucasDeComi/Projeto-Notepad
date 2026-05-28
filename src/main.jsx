@@ -10,7 +10,7 @@ createRoot(document.getElementById('root')).render(
     <HashRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/notepad/:notepad" element={<Notepad />} />
+        <Route path="/:notepadId/:tabId" element={<Notepad />} />
       </Routes>
     </HashRouter>
   </StrictMode>,

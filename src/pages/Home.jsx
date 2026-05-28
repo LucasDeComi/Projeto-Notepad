@@ -1,4 +1,4 @@
-import { doc, getDoc, addDoc, setDoc, collection } from "firebase/firestore";
+import { doc, getDoc, getDocs, addDoc, setDoc, collection } from "firebase/firestore";
 import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
@@ -31,7 +31,8 @@ export default function Home() {
           conteudo: ""
         });
       }
-      navigate(`/notepad/${code}`);
+      const tabsSnap = await getDocs(collection(db, "dbprojetonotepad", code, "guias"));
+      navigate(`/${code}/${tabsSnap.docs[0].id}`);
     }
   }
   return (
