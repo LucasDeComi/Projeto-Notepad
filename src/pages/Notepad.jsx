@@ -65,8 +65,9 @@ export default function Notepad() {
   }
 
   return (
-    <div className="w-screen h-screen flex">
-      <aside className="max-w-75 lg:w-[20%] w-[30%] flex flex-col gap-5 px-2 py-10 border-r border-black overflow-y-scroll">
+    <div className="w-screen h-screen flex md:flex-row flex-col-reverse">
+      <aside className="md:max-w-75 xl:w-[20%] lg:w-[30%] md:w-[40%] w-full md:h-full h-[40%]
+      flex flex-col gap-5 px-2 md:py-10 py-5 md:pb-0 pb-10 md:border-r md:border-t-0 border-t border-black overflow-y-scroll">
         <section className="flex flex-col gap-2 px-2">
           <div className="flex justify-between items-center">
             <h1>Suas guias</h1>
@@ -81,7 +82,7 @@ export default function Notepad() {
           <TabLink key={tab.id} tab={tab.id} note={notepadId} active={tab.id === tabId} >{tab.nome}</TabLink>
         ))}
       </aside>
-      <textarea className="w-full h-screen p-3 resize-none"
+      <textarea className="w-full md:h-full h-[60%] p-3 resize-none"
       value={text} onChange={updateText} />
     </div>
   )
